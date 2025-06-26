@@ -1718,6 +1718,19 @@ export class App {
     const isFirstLoadItem = event.isfirstitem;
 
     if (event.loadtype === 'image') {
+      const modality = event.data?.meta?.['00080060']?.value?.[0];
+
+      // Add SEG as a new data item and render as overlay
+      if (modality === 'SEG') {
+        const segDataId = this.#dataController.getNextDataId();
+        this.#dataController.add(segDataId, event.data);
+
+        const segViewConfig = new ViewConfig('layerGroup0');
+        this.addDataViewConfig(segDataId, segViewConfig);
+        this.render(segDataId);
+        return;
+      }
+
       if (isFirstLoadItem) {
         this.#dataController.add(event.dataid, event.data);
       } else {
